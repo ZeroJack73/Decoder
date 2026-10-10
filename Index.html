@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="DES-CIFRADOR — Suite interactiva de criptografía clásica: Cifrado César (soporte Ñ), Código Morse, Base64, ROT13, rueda interactiva y mini-juego de retos criptográficos." />
+    <title>DES-CIFRADOR · Suite Criptográfica Interactiva</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="wrap">
+      <!-- Header Superior -->
+      <header>
+        <div class="header-title">
+          <img src="assets/logo.svg" alt="DES-CIFRADOR logo" class="logo-img" />
+          <div>
+            <h1>DES-CIFRADOR</h1>
+            <div class="subtitle">Cifrado César · Alfabeto Español (Ñ) · Cripto Suite</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Botón Compartir Secreto -->
+          <button class="icon-action-btn" onclick="openShareModal()" title="Compartir Mensaje Secreto con Enlace / QR" aria-label="Compartir">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </button>
+          <!-- Menú Hamburguesa -->
+          <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" title="Menú de información" aria-label="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Selector de Modos / Pestañas -->
+      <nav class="mode-tabs">
+        <button class="tab-btn active" onclick="switchTab('tabCesar', this)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3v18M3 12h18"></path>
+          </svg>
+          <span>Cifrado César</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tabMorse', this)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 11a8 8 0 0 1 16 0M7 14a5 5 0 0 1 10 0M12 17v4"></path>
+          </svg>
+          <span>Código Morse</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('tabOtros', this)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+          <span>Base64 / ROT13</span>
+        </button>
+        <button class="tab-btn tab-game" onclick="switchTab('tabGame', this)">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="6"></rect>
+            <circle cx="8" cy="12" r="1.5"></circle>
+            <path d="M15 10v4M13 12h4"></path>
+          </svg>
+          <span>Retos Cripto</span>
+        </button>
+      </nav>
+
+      <!-- ================= PESTAÑA 1: CIFRADO CÉSAR ================= -->
+      <main id="tabCesar" class="tab-content active">
+        <!-- Tarjeta Principal César -->
+        <div class="card">
+          <div class="row" style="margin-bottom:12px">
+            <label for="texto">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>Texto</span>
+            </label>
+            <textarea id="texto" placeholder="Escribe tu mensaje aquí...">Hola mundo con Ñ</textarea>
+          </div>
+
+          <!-- Slider de Desplazamiento & Presets -->
+          <div class="row" style="margin-bottom:14px">
+            <label for="shiftSlider">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Desplazamiento</span>
+            </label>
+            <div class="shift-slider-container">
+              <input type="range" id="shiftSlider" class="shift-slider" min="-26" max="26" value="3" />
+              <span id="shiftValBadge" class="shift-badge-val">+3</span>
+              <input id="desp" type="hidden" value="3" />
+            </div>
+          </div>
+
+          <!-- Chips de Presets Rápidos y Live Mode -->
+          <div class="row" style="justify-content:space-between;flex-wrap:wrap;margin-bottom:16px">
+            <div class="preset-chips">
+              <span style="font-size:13px;color:var(--muted);align-self:center">Atajos:</span>
+              <button class="chip-btn" onclick="setPresetShift(3)">+3 (César Clásico)</button>
+              <button class="chip-btn" onclick="setPresetShift(13)">+13 (ROT13)</button>
+              <button class="chip-btn" onclick="setPresetShift(7)">+7</button>
+              <button class="chip-btn" onclick="setPresetShift(0)">0 (Reset)</button>
+            </div>
+
+            <label class="live-toggle-wrap">
+              <input type="checkbox" id="liveModeToggle" checked />
+              <span>Modo en Vivo (Live)</span>
+            </label>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="row" style="margin-bottom:16px">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Acciones</span>
+            </label>
+            <div class="controls">
+              <button class="btn btn-primary" onclick="cesarEncriptar(true)">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Encriptar</span>
+              </button>
+              <button class="btn" onclick="cesarDesencriptar(true)">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+                <span>Descifrar</span>
+              </button>
+              <button class="btn btn-pink" onclick="openInteractiveModal()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+                <span>Detectar + Rueda</span>
+              </button>
+              <button class="btn btn-green" onclick="openShareModal()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <span>Compartir</span>
+              </button>
+              <button class="btn" onclick="limpiarCampos()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Limpiar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Resultado César -->
+          <div class="row">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Resultado</span>
+            </label>
+            <div style="flex:1;display:flex;gap:10px;align-items:center">
+              <div id="salidaCesar" class="result" style="flex:1" aria-live="polite">--</div>
+              <button class="icon-btn" onclick="copyAll('cesar', this)" title="Copiar resultado" aria-label="Copiar resultado">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta Binario y Hexadecimal -->
+        <div class="card">
+          <div class="row" style="margin-bottom:12px">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="9" x2="20" y2="9"></line>
+                <line x1="4" y1="15" x2="20" y2="15"></line>
+                <line x1="10" y1="3" x2="8" y2="21"></line>
+                <line x1="16" y1="3" x2="14" y2="21"></line>
+              </svg>
+              <span>Binario</span>
+            </label>
+            <div style="flex:1;display:flex;gap:10px;align-items:flex-start">
+              <textarea id="salidaBin" class="result" readonly placeholder="Representación binaria (8 bits por carácter)..."></textarea>
+              <button class="icon-btn" onclick="copyAll('bin', this)" title="Copiar binario" aria-label="Copiar binario">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-bottom:12px">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+              </svg>
+              <span>Hexadecimal</span>
+            </label>
+            <div style="flex:1;display:flex;gap:10px;align-items:flex-start">
+              <textarea id="salidaHex" class="result" readonly placeholder="Representación hexadecimal..."></textarea>
+              <button class="icon-btn" onclick="copyAll('hex', this)" title="Copiar hex" aria-label="Copiar hex">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="controls" style="margin-top:10px">
+            <button class="btn" onclick="convertirBinario()">Convertir a Binario</button>
+            <button class="btn" onclick="convertirHex()">Convertir a Hex</button>
+          </div>
+        </div>
+      </main>
+
+      <!-- ================= PESTAÑA 2: CÓDIGO MORSE ================= -->
+      <section id="tabMorse" class="tab-content">
+        <div class="card">
+          <div class="row" style="margin-bottom:12px">
+            <label for="textoMorse">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span>Entrada</span>
+            </label>
+            <textarea id="textoMorse" placeholder="Escribe texto normal o código Morse (ej: ... --- ...)">SOS MENSAJE SECRETO Ñ</textarea>
+          </div>
+
+          <div class="row" style="margin-bottom:16px">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Acciones</span>
+            </label>
+            <div class="controls">
+              <button class="btn btn-primary" onclick="convertirMorse()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+                <span>Texto a Morse</span>
+              </button>
+              <button class="btn" onclick="decodificarMorse()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+                <span>Morse a Texto</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Salida</span>
+            </label>
+            <div style="flex:1;display:flex;gap:10px;align-items:flex-start">
+              <textarea id="salidaMorse" class="result" readonly placeholder="Resultado Morse o texto decodificado..."></textarea>
+              <button class="icon-btn" onclick="copyAll('morse', this)" title="Copiar Morse" aria-label="Copiar Morse">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PESTAÑA 3: BASE64 / ROT13 ================= -->
+      <section id="tabOtros" class="tab-content">
+        <div class="card">
+          <div class="row" style="margin-bottom:12px">
+            <label for="textoOtros">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span>Entrada</span>
+            </label>
+            <textarea id="textoOtros" placeholder="Texto a procesar...">Clave de seguridad 2026</textarea>
+          </div>
+
+          <div class="row" style="margin-bottom:16px">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Algoritmos</span>
+            </label>
+            <div class="controls">
+              <button class="btn btn-primary" onclick="convertirBase64()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                <span>Codificar Base64</span>
+              </button>
+              <button class="btn" onclick="decodificarBase64()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+                <span>Decodificar Base64</span>
+              </button>
+              <button class="btn btn-pink" onclick="convertirROT13()">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Aplicar ROT13</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Salida</span>
+            </label>
+            <div style="flex:1;display:flex;gap:10px;align-items:flex-start">
+              <textarea id="salidaOtros" class="result" readonly placeholder="Resultado..."></textarea>
+              <button class="icon-btn" onclick="copyAll('otros', this)" title="Copiar resultado" aria-label="Copiar resultado">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PESTAÑA 4: RETOS CRIPTO (MINI-JUEGO) ================= -->
+      <section id="tabGame" class="tab-content">
+        <div class="card">
+          <div class="game-header">
+            <div>
+              <h2 style="margin:0;color:var(--neon-b);font-size:24px">Desafío: Descifra el Código</h2>
+              <div class="subtitle">Averigua el texto original detrás del cifrado misterioso</div>
+            </div>
+
+            <div class="score-board">
+              <div class="score-card">
+                <div class="val" id="gameScoreVal">0</div>
+                <div class="lbl">Puntos</div>
+              </div>
+              <div class="score-card">
+                <div class="val" id="gameStreakVal" style="color:var(--neon-green)">0</div>
+                <div class="lbl">Racha</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="challenge-box">
+            <div style="font-size:13px;text-transform:uppercase;color:var(--muted);letter-spacing:1px">Mensaje Cifrado:</div>
+            <div class="challenge-text" id="gameCipherBox">CARGANDO DESAFÍO...</div>
+            <div class="hint-text" id="gameHintText">Pista: ...</div>
+          </div>
+
+          <div class="row" style="margin-bottom:14px">
+            <label for="gameGuessInput">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+              <span>Tu Respuesta</span>
+            </label>
+            <input type="text" id="gameGuessInput" placeholder="Escribe el mensaje descifrado en mayúsculas..." style="flex:1" autocomplete="off" />
+            <button class="btn btn-primary" onclick="checkChallengeGuess()">Comprobar</button>
+            <button class="btn" onclick="nextChallenge()">Saltar</button>
+          </div>
+
+          <div id="gameWinBanner" class="win-banner">
+            <!-- Banner dinámico al acertar -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MODAL: MENÚ ACERCA DE ================= -->
+      <div class="modal" id="menuModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Menú del Proyecto</h2>
+            <button class="modal-close" onclick="closeMenu()" aria-label="Cerrar">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-scroll-area">
+            <div class="modal-section">
+              <h3>
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>Acerca de DES-CIFRADOR</span>
+              </h3>
+              <p>
+                <strong>DES-CIFRADOR</strong> es una suite criptográfica académica y moderna para
+                <strong>mejorar la comprensión de algoritmos de cifrado y seguridad de contraseñas</strong>.
+              </p>
+              <p>
+                Soporta el alfabeto español completo con <strong>Ñ</strong>, mayúsculas, minúsculas,
+                conversiones automáticas, código Morse y herramientas de criptoanálisis interactivo.
+              </p>
+              <p><strong>Características destacadas:</strong></p>
+              <ul style="margin:6px 0;padding-left:20px;color:var(--muted);font-size:15px;line-height:1.7">
+                <li>Cifrado César interactivo con slider en tiempo real y soporte Ñ</li>
+                <li>Efecto hacker/matrix scramble al codificar</li>
+                <li>Rueda de César animada con heurística automática de idioma español</li>
+                <li>Código Morse bidireccional</li>
+                <li>Base64, ROT13, Binario y Hexadecimal</li>
+                <li>Mini-juego de retos criptográficos con pistas y puntuación</li>
+                <li>Compartir mensajes secretos cifrados vía enlace URL hash y código QR</li>
+              </ul>
+              <p style="margin-top:14px;padding:12px;background:rgba(255,51,212,0.1);border-left:3px solid var(--neon-b);border-radius:6px">
+                <strong style="color:var(--neon-b)">Universidad del Valle de Guatemala</strong><br />
+                <span style="font-size:13px;color:var(--muted)">
+                  Proyecto académico de matemáticas y criptografía aplicada al desarrollo web moderno.
+                </span>
+              </p>
+            </div>
+
+            <div class="modal-section">
+              <h3>
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Sugerencias y Feedback</span>
+              </h3>
+              <p>¿Tienes ideas para seguir mejorando DES-CIFRADOR?</p>
+              <textarea id="sugerenciaTexto" placeholder="Escribe tu sugerencia, reporte de error o idea aquí..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" onclick="enviarSugerencia()">Enviar Sugerencia</button>
+              <button class="btn" onclick="closeMenu()">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= MODAL: RUEDA CÉSAR INTERACTIVA ================= -->
+      <div class="modal" id="interactiveModal">
+        <div class="modal-content" style="max-width:805px">
+          <div class="modal-header">
+            <h2>
+              <span>Ataque Interactivo César</span>
+              <span id="shiftBadge" class="shift-suggestion" style="display:none"></span>
+            </h2>
+            <button class="modal-close" onclick="closeInteractiveModal()" aria-label="Cerrar">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-scroll-area" style="padding: 20px 35px 25px 35px;">
+            <p class="subtitle" style="margin-bottom:14px;color:var(--neon-b)">
+              Gira los discos hasta que el mensaje descifrado tenga sentido en español.
+            </p>
+
+            <div class="row" style="flex-direction:column;align-items:flex-start;margin-bottom:12px">
+              <label for="encryptedInput" style="color:var(--neon-a);margin-bottom:6px">
+                Mensaje Cifrado
+              </label>
+              <textarea id="encryptedInput" placeholder="Pega aquí el mensaje cifrado..." style="width:100%;min-height:75px"></textarea>
+            </div>
+
+            <div class="row" style="flex-direction:column;align-items:flex-start;margin-bottom:16px">
+              <label style="color:var(--neon-b);margin-bottom:6px">
+                Resultado Descifrado
+              </label>
+              <div id="decryptedOutput" class="result" style="width:100%;min-height:54px">--</div>
+            </div>
+
+            <div class="row" style="justify-content:space-between;margin-top:14px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <label for="currentShift" style="color:var(--neon-a)">Shift:</label>
+                <input id="currentShift" type="number" value="0" readonly style="width:80px;text-align:center;color:var(--neon-a);font-weight:bold" />
+              </div>
+              <div class="controls">
+                <button class="btn" onclick="adjustShift(1)">Shift +1</button>
+                <button class="btn" onclick="adjustShift(-1)">Shift -1</button>
+              </div>
+            </div>
+
+            <!-- Rueda Gráfica de Cifrado (Dimensiones y proporción original) -->
+            <div class="cipher-wheel-container">
+              <div class="wheel-base">
+                <div class="wheel fixed-wheel"  id="fixedWheel"></div>
+                <div class="wheel moving-wheel" id="movingWheel"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-primary" onclick="copyDecrypted()">Copiar Resultado</button>
+            <button class="btn" onclick="closeInteractiveModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= MODAL: COMPARTIR MENSAJE SECRETO ================= -->
+      <div class="modal" id="shareModal">
+        <div class="modal-content" style="max-width:560px">
+          <div class="modal-header">
+            <h2>Compartir Mensaje Secreto</h2>
+            <button class="modal-close" onclick="closeShareModal()" aria-label="Cerrar">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-scroll-area">
+            <p style="color:var(--muted);font-size:15px;margin-bottom:14px">
+              Envía este enlace o código QR a tus amigos para que descifren tu mensaje secreto en DES-CIFRADOR:
+            </p>
+
+            <div class="qr-container">
+              <div class="qr-box" id="shareQrBox">
+                <!-- Imagen QR generada dinámicamente -->
+              </div>
+              <span style="font-size:12px;color:var(--muted)">Escanea con la cámara de tu teléfono</span>
+            </div>
+
+            <div class="row" style="flex-direction:column;align-items:flex-start">
+              <label for="shareUrlInput" style="margin-bottom:6px">Enlace Directo</label>
+              <div style="display:flex;gap:10px;width:100%">
+                <input type="text" id="shareUrlInput" readonly style="flex:1" />
+                <button class="btn btn-primary" onclick="copyShareLink()">Copiar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" onclick="closeShareModal()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
